@@ -30,6 +30,15 @@ height (Node _ left  right) = 1 + max (height left) (height right)
 data Direction = LeftTurn | RightTurn | Straight deriving (Eq, Show)
 type Cartesian2D = (Float, Float)
 
+-- after doing my longer case-exhaution implementation I read on Wikipedia how to do it with the cross product
+-- https://en.wikipedia.org/wiki/Graham_scan
+turnWikipedia :: Cartesian2D -> Cartesian2D -> Cartesian2D -> Direction
+turnWikipedia a b c
+  | z > 0     = LeftTurn
+  | z < 0     = RightTurn
+  | otherwise = Straight
+    where z = (fst b - fst a) * (snd c - snd a) - (snd b - snd a) * (fst c - fst a)
+
 turn :: Cartesian2D -> Cartesian2D -> Cartesian2D -> Direction
 turn a b c = case slope a b of
     Just m  -> if m >= 0 then posTurn a b c m else negTurn a b c m
