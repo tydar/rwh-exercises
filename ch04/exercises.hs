@@ -17,7 +17,11 @@ safeLast (_:xs) = safeLast xs
 
 -- the recursive solution gets us into a situation here
 -- remembering monadic operations.......entering a trance.......
+-- actually just need fmap
 safeInit :: [a] -> Maybe [a]
 safeInit [] = Nothing
 safeInit [x] = Just []
-safeInit (x:xs) = safeInit xs >>= Just . (:) x 
+safeInit (x:xs) = (:) x <$> safeInit xs
+
+-- using monadic operations
+--safeInit (x:xs) = safeInit xs >>= Just . (:) x 
