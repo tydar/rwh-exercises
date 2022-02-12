@@ -1,8 +1,6 @@
 -- ch04 exercises
 
 import Data.Char (digitToInt)
-import Distribution.SPDX (LicenseId(AFL_3_0))
-import Text.Parsec.Error (messageString)
 
 -- Write your own "safe" versions of the standard partial list functions
 -- but make sure that yours never fail.
