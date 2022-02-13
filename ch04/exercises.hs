@@ -89,3 +89,24 @@ consToGroupOrNot _ x [] = [[x]]
 consToGroupOrNot f x xs
   | f x $ head $ head xs = (x : head xs) : tail xs
   | otherwise            = [x]:xs
+
+-- How many of the following Prelude functions can you rewrite using list folds?
+
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny _ [] = False
+myAny f xs = foldr func False xs
+  where func x acc = acc || f x
+
+-- I don't believe cycle can be implemented with a fold
+-- I looked into it and now realized I can
+myCycle :: [a] -> [a]
+myCycle xs = foldr (:) (myCycle xs) xs
+
+myWords :: String -> [String]
+myWords str = [str]
+
+myUnlines :: [String] -> String 
+myUnlines = foldl newlineAfter "" . reverse
+
+newlineAfter :: String -> String -> String
+newlineAfter str acc = acc ++ "\n" ++ str
