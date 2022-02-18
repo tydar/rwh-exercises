@@ -32,7 +32,7 @@ stompFrame = do
   c <- cmd
   newline
   h <- headersParse
-  let headerTuples = toTuples $ head h -- I think we're always getting a [...headers]:[]
+  let headerTuples = if not (null h) then toTuples $ head h else [] -- I think we're always getting a [...headers]:[]
   let cL = contentLength headerTuples
   b <- bodyParse cL
   char '\NUL'
@@ -53,7 +53,10 @@ toTuples (x:xs) = if length x == 2 then (head x, last x) : toTuples xs else erro
 
 -- eta reduced
 parseFrame :: String -> Either ParseError StompFrame
-parseFrame = parse stompFrame "(unknown)"
+parseFrame = parse stompFrame "bad frame"
+
+parseFrames :: String -> Either ParseError [StompFrame]
+parseFrames = parse (many stompFrame) "bad frame"
 
 -- problem: does not respect content-length FIXED
 -- problem: headers not in the (String, String) format I want FIXED
