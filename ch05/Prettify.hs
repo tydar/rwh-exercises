@@ -95,12 +95,34 @@ w `fits` ""        = True
 w `fits` ('\n':_)  = True
 w `fits` (c:cs)    = (w - 1) `fits` cs
 
+-- Ch05 Ending Ex 1
+-- ambiguous instruction about leading vs ending with the spaces.
+-- could rewrite to end with spaces easily and eliminate acc
 fill :: Int -> Doc -> Doc
-fill n Empty    = text $ replicate n ' '
-fill n (Char c) = text $ (++[c]) $ replicate (n - 1) ' '
-fill n (Text s) | length s >= n = Text s
-                | otherwise     = text $ (++s) $ replicate (n - length s) ' '
-fill n Line     = Text (replicate n ' ') `Concat` Line
-fill n (a `Concat` b) = undefined -- probably need to rewrite this to use a stack like compact and pretty
-fill n (a `Union` b)  = undefined -- pad both sides?
+fill width x = filled 0 Empty [x]
+  where filled col acc (d:ds) =
+          case d of
+            Empty -> filled col acc ds
+            Char c -> filled (col + 1) (acc <> d) ds
+            Text s -> filled (col + length s) (acc <> d) ds 
+            Line   -> (filled col acc [] <> d) <> filled 0 Empty ds
+            a `Concat` b -> filled col acc (a:b:ds)
+            a `Union` b -> filled col acc (a:ds)
+        filled 0   _  [] = Empty -- we don't want to pad out an empty line at the end
+        filled col acc _ = text (replicate (width - col) ' ') <> acc
 
+-- Ch05 Ending Ex 2
+-- nest
+-- need to track levels for {} and [] separately
+-- also need to determine how and where to insert line breaks manually
+-- renderJValue does not <> Line when rendering JObject or JArry 
+-- by default
+nest :: Int -> Doc -> Doc
+nest width x = nested 0 Empty [x]
+  where nested level acc (d:ds) =
+              case d of
+                Empty -> nested level acc ds
+                Char '{' -> nested (level + 1) (acc <> d) ds
+                Char '[' -> nested (level + 1) (acc <> d) ds
+                Char '}' -> if level > 0 then nested (level - 1) (acc <> d) ds else nested 0 (acc <> d) ds
+                Char ']' -> undefined

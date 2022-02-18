@@ -9,7 +9,7 @@ import Data.Bits (shiftR, (.&.))
 import Data.Char (ord)
 
 import SimpleJSON (JValue(..))
-import Prettify (char, text, double, (<>), Doc, fsep, punctuate, hcat, compact, pretty)
+import Prettify (char, text, double, (<>), Doc, fsep, punctuate, hcat, compact, pretty, fill)
 
 renderJValue :: JValue -> Doc
 renderJValue (JBool True)  = text "true"
